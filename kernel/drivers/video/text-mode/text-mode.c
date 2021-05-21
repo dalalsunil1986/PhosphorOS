@@ -1,12 +1,15 @@
 #define TMW 80
 #define TMH 25
 
-#include <stdint.h>
+#define TMC(f, b) ((((uint8_t)(f) & 0x0F) << 8) + (((uint8_t)(b) & 0x0F) << 12))
 
-uint16_t* textmode_vbuf = (uint16_t *)0xB8000;
+#include <stdint.h>
+#include <io/ports/ports.h>
+
+uint16_t* textmode_vbuf = (uint16_t *)0x000B8000;
 
 static inline void textmode_setchar(int x, int y, char c) {
-    textmode_vbuf[x + y * TMW] = c + (fgc << 8) + (bgc << 16);
+    textmode_vbuf[x + y * TMW] = c + TMC(fgc, bgc);
 }
 
 void textmode_vscroll(int l) {
@@ -20,11 +23,31 @@ void textmode_vscroll(int l) {
     }
     while (y < TMH) {
         for (int x = 0; x < TMW; x++) {
-            textmode_vbuf[x + y * TMW] = (fgc << 8) + (bgc << 16);
+            textmode_vbuf[x + y * TMW] = TMC(fgc, bgc);
         }
         y++;
     }
 }
+
+void textmode_updatecursor() {
+    int pos = curx + screenw * cury;
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t) (pos & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+}
+
+void textmode_blankcolor(uint32_t color) {
+    for (int i = 0; i < TMW * TMH; i++) {
+        textmode_vbuf[i] = TMC(fgc, color);
+    }
+}
+
+static inline void textmode_clearcolor(uint32_t color) {
+    curx = 0; cury = 0;
+    textmode_blankcolor(color);
+}
+
 
 void initTextMode() {
     curx = 0;
@@ -38,4 +61,7 @@ void initTextMode() {
     bgc = 0;
     ksetchar = textmode_setchar;
     vscroll = textmode_vscroll;
+    updatecursor = textmode_updatecursor;
+    vblankcolor = textmode_blankcolor;
+    vclearcolor = textmode_clearcolor;
 }

@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <io/ports/ports.h>
 
-void vmode(unsigned int mode) {
+void setvmode(unsigned int mode) {
+    vmode = mode;
     switch (mode) {
         case 0:
             initTextMode();
@@ -10,4 +11,17 @@ void vmode(unsigned int mode) {
             initTextMode();
             break;
     }
+}
+
+static inline void vcolor(uint32_t f, uint32_t b) {
+    fgc = f;
+    bgc = b;
+}
+
+inline void vblank() {
+    vblankcolor(bgc);
+}
+
+inline void vclear() {
+    vclearcolor(bgc);
 }

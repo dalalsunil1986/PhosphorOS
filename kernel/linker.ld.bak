@@ -2,9 +2,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-	. = 0x00100000;
-
-    _kernel_start = .;
+	. = 1M;
 
 	.text BLOCK(4K) : ALIGN(4K)
 	{
@@ -24,13 +22,7 @@ SECTIONS
  
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
-        sbss = .;
 		*(COMMON)
 		*(.bss)
-		*(.bootstrap_stack)
-        ebss = .;
-    	endkernel = .;
 	}
-	
-	_kernel_end = .;
 }
