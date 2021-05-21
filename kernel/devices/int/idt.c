@@ -17,4 +17,3 @@ void set_idt() {
     /* Don't make the mistake of loading &idt -- always load &idt_reg */
     __asm__ volatile("lidtl (%0)" : : "r" (&idt_reg));
 }
-

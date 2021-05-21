@@ -8,7 +8,7 @@
 
 void hang();
 
-char phkver[] = "0.2";
+char phkver[] = "0.3";
 char phkrev[] = "A";
 
 void main(uint32_t mbm, void* mbh) {
@@ -32,14 +32,24 @@ void main(uint32_t mbm, void* mbh) {
     checkmem();
     kprintf("%_fWelcome %_fto %_fPhosphorOS %_fversion %_f%s %_frevision %_f%s%_f!\n", 15, 1, 9, 2, 10, phkver, 4, 12, phkrev, 15);
     kprintf("%_fUsable%_f memory:\t%_f%u %_fbytes\n%_fFree%_f memory:%_f\t%u %_fbytes\n", 14, 7, 12, usable_mem, 8, 10, 7, 12, free_mem, 8);
-    for (bgc = 0; bgc < 8; bgc++) {
-        __kputs("  ");
+    for (fgc = 0; fgc < 8; fgc++) {
+        __kputs("\xB1\xB1");
     }
     kputchar('\n');
     for (bgc = 8; bgc < 16; bgc++) {
         __kputs("  ");
     }
-    bgc = 0;
+    kputchar('\n');
+    for (bgc = 0; bgc < 8; bgc++) {
+        fgc = 15 - bgc;
+        __kputs("\xB1\xB1");
+    }
+    kputchar('\n');
+    for (bgc = 8; bgc < 16; bgc++) {
+        fgc = 15 - bgc;
+        __kputs("\xB1\xB1");
+    }
+    vcolor(7, 0);
     kputchar('\n');
     //__asm__ volatile ("int $1");
     //char* buf1 = (char *)malloc(32768 * sizeof(char));

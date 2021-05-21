@@ -1,6 +1,21 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+bool keydown[384];
+
+static char keymap_lower[128] =
+"\e1234567890-=\b\tqwertyuiop[]\n\0asdfghjkl;'`\0\\zxcvbnm,./\0*\0 \0\0\0\0\0\0\0\0\0\0\0\0\0""789-456+1230.\0\0\0\0\0";
+
+static char keymap_upper[128] =
+"\e!@#$%^&*()_+\b\tQWERTYUIOP{}\r\0ASDFGHJKL:\"~\0|ZXCVBNM<>?\0*\0 \0\0\0\0\0\0\0\0\0\0\0\0\0""789-456+1230.\0\0\0\0\0";
+
+static char keymap_special[128] =
+"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\n\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0/\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x7F\0\0\0\0\0";
+
 char *exmsgs[] = {
     "Division By Zero",
     "Debug",
@@ -36,8 +51,21 @@ char *exmsgs[] = {
     "Reserved"
 };
 
-#include <stddef.h>
-#include <stdint.h>
+struct regs
+{
+    unsigned int gs, fs, es, ds;      /* pushed the segs last */
+    unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by 'pusha' */
+    unsigned int int_no, err_code;    /* our 'push byte #' and ecodes do this */
+    unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */ 
+};
+
+typedef struct {
+   uint32_t ds; /* Data segment selector */
+   uint32_t edi, esi, ebp, useless, ebx, edx, ecx, eax; /* Pushed by pusha. */
+   uint32_t int_no, err_code; /* Interrupt number and error code (if applicable) */
+   uint32_t eip, cs, eflags, esp, ss; /* Pushed by the processor automatically */
+} registers_t;
+
 #include <video/video.h>
 #include <kstd.h>
 #include <util.h>

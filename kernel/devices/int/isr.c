@@ -73,17 +73,12 @@ void isr_install() {
     set_idt(); // Load with ASM
 }
 
-struct regs
-{
-    unsigned int gs, fs, es, ds;      /* pushed the segs last */
-    unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by 'pusha' */
-    unsigned int int_no, err_code;    /* our 'push byte #' and ecodes do this */
-    unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */ 
-};
-
-void isr_handler(struct regs *r) {
-    kprintf(">>> Received interrupt: %d (%s)\n", r->int_no, exmsgs[r->int_no]);
-    kpanic(r->int_no, NULL);
+void isr_handler(struct regs* r) {
+    if (r->int_no > 31) {
+        kprintf(">>> Received interrupt: %d (%s)\n", r->int_no, exmsgs[r->int_no]);
+    } else {
+        kpanic(r->int_no, r, NULL);
+    }
 }
 
 void register_interrupt_handler(uint8_t n, isr_t handler) {
@@ -104,6 +99,8 @@ void irq_handler(registers_t *r) {
 }
 
 void irq_install() {
+   outb(0x21,0xfd);
+   outb(0xa1,0xff);
     /* Enable interruptions */
     __asm__ volatile("sti");
     /* IRQ0: timer */

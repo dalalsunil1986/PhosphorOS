@@ -1,6 +1,6 @@
 #include <common.h>
 
-void kpanic(int err, char* str) {
+void kpanic(int err, struct regs* r, char* str) {
     __asm__ volatile("cli");
     setvmode(0);
     vclearcolor(1);
