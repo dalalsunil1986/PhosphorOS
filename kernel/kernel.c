@@ -8,7 +8,7 @@
 
 void hang();
 
-char phkver[] = "0.1";
+char phkver[] = "0.2";
 char phkrev[] = "A";
 
 void main(uint32_t mbm, void* mbh) {
