@@ -7,6 +7,9 @@ ASMFLAGS = -f elf32
 C = gcc
 CFLAGS = -m32 -funsigned-char -ffreestanding -O2
 
+EMU = qemu-system-i386
+EMUFLAGS = -cdrom PhOS.iso -m 256M
+
 all: build run
 
 clean:
@@ -19,12 +22,18 @@ build: clean
 	$(AS) $(ASFLAGS) kernel/boot.s -o build/boot.o
 	$(ASM) $(ASMFLAGS) kernel/devices/mem/gdt.asm -o build/gdt.o
 	$(ASM) $(ASMFLAGS) kernel/devices/int/interrupt.asm -o build/interrupt.o
-	$(C) -Ikernel/devices -Ikernel/drivers -Ikernel/lib $(CFLAGS) -c kernel/kernel.c -std=c99 -o build/kernel.o
-	$(C) -T kernel/linker.ld -o build/phos.bin $(CFLAGS) -nostdlib build/* -lgcc
-	mkdir -p image/boot/grub
-	cp grub.cfg image/boot/grub/grub.cfg
-	cp build/phos.bin image/boot/PhOS.bin
-	grub-mkrescue -o PhOS.iso image
-
+	$(C) -Ikernel/devices -Ikernel/drivers -Ikernel/lib -Ikernel/ $(CFLAGS) -c kernel/kernel.c -std=c99 -o build/kernel.o
+	$(C) -T kernel/linker.ld -o build/phos.elf $(CFLAGS) -nostdlib build/* -lgcc
+	mkdir -p image/limine
+	cp build/phos.elf limine.cfg limine.cfg limine/limine.sys limine/limine-cd.bin limine/limine-eltorito-efi.bin image/
+	xorriso -as mkisofs -b limine-cd.bin \
+        -no-emul-boot -boot-load-size 4 -boot-info-table -part_like_isohybrid \
+        --mbr-force-bootable \
+        -eltorito-alt-boot -e limine-eltorito-efi.bin \
+        -no-emul-boot image -isohybrid-gpt-basdat -o PhOS.iso
+	./limine/limine-install PhOS.iso || true
 run:
-	qemu-system-i386 -cdrom PhOS.iso -m 256
+	$(EMU) $(EMUFLAGS)
+
+debug:
+	$(EMU) $(EMUFLAGS) -d int --no-reboot --no-shutdown
