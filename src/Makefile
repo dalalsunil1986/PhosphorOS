@@ -23,9 +23,9 @@ build: clean
 	$(ASM) $(ASMFLAGS) kernel/devices/mem/gdt.asm -o build/gdt.o
 	$(ASM) $(ASMFLAGS) kernel/devices/int/interrupt.asm -o build/interrupt.o
 	$(C) -Ikernel/devices -Ikernel/drivers -Ikernel/lib -Ikernel/ $(CFLAGS) -c kernel/kernel.c -std=c99 -o build/kernel.o
-	$(C) -T kernel/linker.ld -o build/phos.elf $(CFLAGS) -nostdlib build/* -lgcc
+	$(C) -Tkernel/linker.ld -o build/phos.bin $(CFLAGS) -nostdlib build/* -lgcc
 	mkdir -p image/boot
-	cp build/phos.elf image/
+	cp build/phos.bin image/
 	cp limine.cfg limine/limine.sys limine/limine-cd.bin limine/limine-eltorito-efi.bin image/boot
 	xorriso -as mkisofs -b boot/limine-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table -part_like_isohybrid \
 	--mbr-force-bootable -eltorito-alt-boot -e boot/limine-eltorito-efi.bin -no-emul-boot image -isohybrid-gpt-basdat -o PhOS.iso
