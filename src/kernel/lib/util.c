@@ -32,11 +32,12 @@ void fancyClear(int n) {
     switch (n) {
         case 1:
             for (int i = 0; i < textw; i++) {
-                for (int y = 0; y < texth; y += 2) {
-                    vshiftline(y);
-                }
-                for (int y = 1; y < texth; y += 2) {
-                    vunshiftline(y);
+                for (int y = 0; y < texth; y++) {
+                    if (y % 2) {
+                        vunshiftline(y);
+                    } else {
+                        vshiftline(y);
+                    }
                 }
                 delay(15);
             }
