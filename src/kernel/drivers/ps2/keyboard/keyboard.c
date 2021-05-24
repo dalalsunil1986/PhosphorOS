@@ -15,8 +15,10 @@ char tmpbuf[4] = "\0\0\0";
 
 char kbgetchar() {
     if (key) {
+        char ch = c;
         key = false;
-        return c;
+        c = 0;
+        return ch;
     } else {
         return 0;
     }

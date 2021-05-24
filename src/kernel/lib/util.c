@@ -13,12 +13,12 @@ void hang() {
 
 void reboot() {
     asm("cli");
-    tfault();
     uint8_t good = 0x02;
     while (good & 0x02) {
         good = inb(0x64);
     }
     outb(0x64, 0xFE);
+    tfault();
     if (curx) kputchar('\n');
     kputs("Please manually reboot your computer.");
     hang();
