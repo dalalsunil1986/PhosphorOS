@@ -5,7 +5,7 @@
 #include <stivale.h>
 
 char phkver[] = "0.6";
-char phkrev[] = "A";
+char phkrev[] = "B";
 
 void main(struct stivale_struct* boot_info) {
     stivale_info = boot_info;
@@ -33,7 +33,9 @@ void main(struct stivale_struct* boot_info) {
         10, 7, 11, free_mem, 8, 11, free_mem >> 10, 8,
         12, 7, 11, usable_mem - free_mem, 8, 11, (usable_mem - free_mem) >> 10, 8
     );
-    kprintf("%_fDEBUG%_f: Press CTRL+F12 to cause a crash\n", 14, 7);
+    sysmsg(0, "Press the arrow keys to move the cursor");
+    sysmsg(0, "F1-F8 = fg color 0-7, Shift+F1-F8 = fg color 8-15, Ctrl = bg color");
+    sysmsg(0, "Press Ctrl + F12 to cause a crash");
     delay(40);
     for (bgc = 0; bgc < 16; bgc++) {
         delay(10);

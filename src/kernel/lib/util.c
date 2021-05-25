@@ -180,11 +180,13 @@ void idleKeyboard() {
                 }
                 updatecursor();
                 break;
-            case 0x8C:
+            case 0x8B:
                 if (lctl_d || rctl_d) asm("int $1");
                 break;
+            case 0x8C:
+                break;
             default:
-                kputchar(ch);
+                if (ch < 128) kputchar(ch);
                 break;
         }
         asm("hlt");
@@ -219,6 +221,35 @@ void anykey(bool enter, bool clearln, char* str) {
     } else {
         kputchar('\n');
     }
+}
+
+void sysmsg(int code, char *s, ...)
+{
+    va_list args;
+    uint32_t tmpfgc = fgc;
+    switch (code) {
+        case 0:
+            kprintf("%_fINFO", 11);
+            break;
+        case 1:
+            kprintf("%_fDEBUG", 6);
+            break;
+        case 2:
+            kprintf("%_fWARNING", 14);
+            break;
+        case 3:
+            kprintf("%_fERROR", 12);
+            break;
+        default:
+            kprintf("%_f[%_f%d%_f]", 8, 15, code, 8);
+            break;
+    }
+    kprintf("%_f: ", 7);
+    va_start(args, s);
+    kprintf(s, *args);
+    kputchar('\n');
+    va_end(args);
+    fgc = tmpfgc;
 }
 
 void vga_noblink() {
