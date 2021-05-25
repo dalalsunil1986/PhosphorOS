@@ -17,9 +17,9 @@ void main(struct stivale_struct* boot_info) {
     anykey(true, true, NULL);
     kprintf("Booted in %ums\n", boot_ticks);
     outb(0x70, 0x00);
-    seed = inb(0x71) * ticks * boot_ticks;
+    seed = inb(0x71) * (ticks + 1) * (boot_ticks + 1);
     outb(0x70, 0x02);
-    seed = seed / inb(0x71) + ticks * boot_ticks - ticks * boot_ticks;
+    seed = seed / inb(0x71) + (ticks + 1) * (boot_ticks + 1) - (ticks + 1) * (boot_ticks + 1);
     kprintf("Random number generator seeded with %u\n", seed);
     kprintf("%_fWelcome %_fto %_fPhosphorOS %_fversion %_f%s %_frevision %_f%s%_f!\n", 15, 1, 9, 2, 10, phkver, 4, 12, phkrev, 15);
     beep(900, 150);
