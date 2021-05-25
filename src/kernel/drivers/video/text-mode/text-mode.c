@@ -121,6 +121,14 @@ static inline void textmode_hidecursor() {
     outb(0x3D5, 0x20);
 }
 
+static inline void textmode_setfgc(int x, int y, uint32_t c) {
+    textmode_vbuf[x + y * TMW] = textmode_getchar(x, y) + TMC(c, textmode_getbgc(x, y));
+}
+
+static inline void textmode_setbgc(int x, int y, uint32_t c) {
+    textmode_vbuf[x + y * TMW] = textmode_getchar(x, y) + TMC(textmode_getfgc(x, y), c);
+}
+
 void initTextMode() {
     curx = 0;
     cury = 0;
@@ -135,6 +143,8 @@ void initTextMode() {
     bgc = 0;
     vsetchar = textmode_setchar;
     vgetchar = textmode_getchar;
+    vsetfgc = textmode_setfgc;
+    vsetbgc = textmode_setbgc;
     vscroll = textmode_vscroll;
     updatecursor = textmode_updatecursor;
     vblankcolor = textmode_blankcolor;

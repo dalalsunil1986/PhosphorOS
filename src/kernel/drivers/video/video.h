@@ -33,6 +33,8 @@ uint32_t (* vgetfgc)(int x, int y);
 uint32_t (* vgetbgc)(int x, int y);
 void (* vhidecursor)(void);
 void (* vcursorstyle)(uint8_t top, uint64_t bottom);
+void (* vsetfgc)(int x, int y, uint32_t c);
+void (* vsetbgc)(int x, int y, uint32_t c);
 
 #include "text-mode/text-mode.h"
 #include "gfx-mode/gfx-mode.h"

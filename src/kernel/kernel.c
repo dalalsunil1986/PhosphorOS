@@ -5,7 +5,7 @@
 #include <stivale.h>
 
 char phkver[] = "0.6";
-char phkrev[] = "B";
+char phkrev[] = "A";
 
 void main(struct stivale_struct* boot_info) {
     stivale_info = boot_info;

@@ -36,7 +36,7 @@ void printmm() {
                 break;
             case STIVALE_MMAP_KERNEL_AND_MODULES:
                 usable_mem += e.length;
-                kputs("[KERNEL/MODULES]");
+                kprintf("[KERNEL/MODULES: %u bytes]\n", e.length);
                 break;
             case STIVALE_MMAP_BOOTLOADER_RECLAIMABLE:
                 usable_mem += e.length;
