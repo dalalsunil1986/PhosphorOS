@@ -41,6 +41,7 @@ void main(struct stivale_struct* boot_info) {
         delay(10);
         _kputs("  ");
     }
+    bgc = 0;
     kputchar('\n');
     delay(20);
     for (bgc = 7; bgc < -1; bgc--) {
@@ -53,6 +54,7 @@ void main(struct stivale_struct* boot_info) {
         bgc = fgc - 8;
         _kputs("\xB1\xB1");
     }
+    bgc = 0;
     kputchar('\n');
     delay(20);
     for (int i = 0; i < 16; i++) {
@@ -60,6 +62,7 @@ void main(struct stivale_struct* boot_info) {
         bgc = rand() % 16;
         _kputs("  ");
     }
+    bgc = 0;
     kputchar('\n');
     delay(20);
     for (int i = 0; i < 16; i++) {
