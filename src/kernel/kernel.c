@@ -4,8 +4,8 @@
 #include <delay.h>
 #include <stivale.h>
 
-char phkver[] = "0.5";
-char phkrev[] = "C";
+char phkver[] = "0.6";
+char phkrev[] = "B";
 
 void main(struct stivale_struct* boot_info) {
     stivale_info = boot_info;

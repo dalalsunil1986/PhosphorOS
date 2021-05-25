@@ -45,7 +45,7 @@ void fancyClear(int n) {
         case 2:
             for (int y = 0; y < texth; y++) {
                 for (int x = 0; x < textw; x++) {
-                    if (vgetbgc(x, y) != bgc || vgetchar(x, y) != 0) max++;
+                    if (vgetchar(x, y) != 0) max++;
                 }
             }
             for (int i = 0; i < max; i++) {
@@ -53,7 +53,7 @@ void fancyClear(int n) {
                 do {
                     x = rand() % textw;
                     y = rand() % texth;
-                } while (vgetbgc(x, y) == bgc && vgetchar(x, y) == 0);
+                } while (vgetchar(x, y) == 0);
                 vsetchar(x, y, 0);
                 delay(1);
             }
@@ -64,6 +64,39 @@ void fancyClear(int n) {
                 vscroll(-1);
                 delay(50);
             }
+            break;
+        case 4:
+            for (int y = 0; y < texth; y++) {
+                for (int x = 0; x < textw; x++) {
+                    if ((vgetfgc(x, y) != fgc || vgetbgc(x, y) != bgc) || (vgetchar(x, y) == 0 && vgetbgc(x, y) != bgc)) max++;
+                }
+            }
+            for (int i = 0; i < max; i++) {
+                int x, y;
+                do {
+                    x = rand() % textw;
+                    y = rand() % texth;
+                } while ((vgetfgc(x, y) == fgc && vgetbgc(x, y) == bgc) && (vgetchar(x, y) != 0 || vgetbgc(x, y) == bgc));
+                vsetbgc(x, y, bgc);
+                vsetfgc(x, y, fgc);
+                delay(2);
+            }
+            max = 0;
+            for (int y = 0; y < texth; y++) {
+                for (int x = 0; x < textw; x++) {
+                    if (vgetchar(x, y) != 0) max++;
+                }
+            }
+            for (int i = 0; i < max; i++) {
+                int x, y;
+                do {
+                    x = rand() % textw;
+                    y = rand() % texth;
+                } while (vgetchar(x, y) == 0);
+                vsetchar(x, y, 0);
+                delay(1);
+            }
+            vblank();
             break;
         default:
             vclear();
@@ -99,11 +132,11 @@ void idleKeyboard() {
                 break;
             case 12:
                 do {
-                    tmp = (rand() % 3) + 1;
+                    tmp = ((uint8_t)(rand()) % 3) + 1;
                 } while (tmp == lastfc);
                 fancyClear(tmp);
                 lastfc = tmp;
-                //fancyClear(3);
+                //fancyClear(4);
                 break;
             case 0x8D:
                 if (cury > 0) cury--;

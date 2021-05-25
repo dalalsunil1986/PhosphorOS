@@ -64,6 +64,7 @@ static inline void _kputchar(char c) {
                     cury += 1;
                 }
             }
+            if (!vgetchar(curx, cury)) vsetfgc(curx, cury, fgc);
             break;
     }
 }
