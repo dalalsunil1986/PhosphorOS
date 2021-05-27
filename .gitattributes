@@ -1,8 +1,8 @@
-*.c     text diff=c
-*.h     text diff=c
-*.1     text diff=asm
-*.2     text diff=asm
-*.3     text diff=asm
+*.c     text diff=c linguist-language=c
+*.h     text diff=c linguist-language=c 
+*.1     text diff=asm linguist-language=asm 
+*.2     text diff=asm linguist-language=asm 
+*.3     text diff=asm linguist-language=asm 
 *.bin   binary
 *.sys   binary
-*.md    text diff=markdown
+*.md    text diff=markdown linguist-language=markdown
