@@ -5,4 +5,4 @@
 *.3     text linguist-language=Assembly
 *.bin   binary 
 *.sys   binary 
-*.md    text diff=Markdown linguist-language=Markdown
+*.md    text linguist-language=Markdown
