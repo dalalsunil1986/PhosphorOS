@@ -1,3 +1,5 @@
+#define GFX_FANCY_TEXT
+
 #include "init.c"
 #include "panic.h"
 #include <common.h>
@@ -6,7 +8,7 @@
 #include <font.h>
 
 char phkver[] = "0.7";
-char phkrev[] = "A";
+char phkrev[] = "B";
 
 void main(struct stivale_struct* boot_info) {
     stivale_info = boot_info;
@@ -45,6 +47,7 @@ void main(struct stivale_struct* boot_info) {
         _kputs("  ");
     }
     bgc = 0;
+    fgc = 7;
     kputchar('\n');
     delay(20);
     for (bgc = 7; bgc < (uint8_t)-1; bgc--) {
@@ -58,6 +61,7 @@ void main(struct stivale_struct* boot_info) {
         _kputs("\xB1\xB1");
     }
     bgc = 0;
+    fgc = 7;
     kputchar('\n');
     delay(20);
     for (int i = 0; i < 16; i++) {
@@ -66,6 +70,7 @@ void main(struct stivale_struct* boot_info) {
         _kputs("  ");
     }
     bgc = 0;
+    fgc = 7;
     kputchar('\n');
     delay(20);
     for (int i = 0; i < 16; i++) {

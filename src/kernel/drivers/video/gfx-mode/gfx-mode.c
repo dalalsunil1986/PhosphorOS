@@ -9,6 +9,9 @@ uint32_t* gfxmode_ptr;
 
 int gfx_pitch;
 
+bool gfx_fancy_text = true;
+int gfx_fancy_gradient = 0x05;
+
 uint32_t gfxmode_colors[16] = {
     0x000000,
     0x0000AA,
@@ -43,95 +46,74 @@ static inline void gfxmode_drawcursor(int bx, int by, uint8_t c) {
     }
 }    
 
-#if 0
-
-#define GRADIENT 0x05
-#define GFX_FANCY_TEXT
-
-#endif
-
 char *convert(uint64_t num, int base);
+
+uint32_t fsub, bsub;
+uint32_t tmpcolor;
+int div;
 
 static inline void gfxmode_writechar(int bx, int by, char c, uint8_t fg, uint8_t bg) {
     int base = (bx * charw + by * screenw * charh);
-    #ifdef GFX_FANCY_TEXT
-    int div = charh / 2;
-    uint32_t fsub = 1;
-    uint32_t bsub = ((charh + 1) / 2) + 1;
-    for (int y = 0; y < div; y++) {
-        for (int x = 0; x < charw; x++) {
-            if ((font[c][y] & (1 << x))) {
-                if (gfxmode_colors[fg]) {
-                    uint32_t tmpcolor = 0;
-                    if (((gfxmode_colors[fg] & 0x0000FF) - (GRADIENT * fsub)) < (gfxmode_colors[fg] & 0x0000FF)) tmpcolor += (gfxmode_colors[fg] & 0x0000FF) - (GRADIENT * fsub);
-                    if (((gfxmode_colors[fg] & 0x00FF00) - ((GRADIENT * fsub) << 8)) < (gfxmode_colors[fg] & 0x00FF00)) tmpcolor += (gfxmode_colors[fg] & 0x00FF00) - ((GRADIENT * fsub) << 8);
-                    if (((gfxmode_colors[fg] & 0xFF0000) - ((GRADIENT * fsub) << 16)) < (gfxmode_colors[fg] & 0xFF0000)) tmpcolor += (gfxmode_colors[fg] & 0xFF0000) - ((GRADIENT * fsub) << 16);
-                    gfxmode_ptr[base] = tmpcolor;
+    if (gfx_fancy_text) {
+        div = charh / 2;
+        fsub = 1;
+        bsub = ((charh + 1) / 2) + 1;
+        for (int y = 0; y < div; y++) {
+            for (int x = 0; x < charw; x++) {
+                if ((font[c][y] & (1 << x))) {
+                    if (gfxmode_colors[fg]) {
+                        tmpcolor = 0;
+                        if (((gfxmode_colors[fg] & 0x0000FF) - (gfx_fancy_gradient * fsub)) < (gfxmode_colors[fg] & 0x0000FF)) tmpcolor += (gfxmode_colors[fg] & 0x0000FF) - (gfx_fancy_gradient * fsub);
+                        if (((gfxmode_colors[fg] & 0x00FF00) - ((gfx_fancy_gradient * fsub) << 8)) < (gfxmode_colors[fg] & 0x00FF00)) tmpcolor += (gfxmode_colors[fg] & 0x00FF00) - ((gfx_fancy_gradient * fsub) << 8);
+                        if (((gfxmode_colors[fg] & 0xFF0000) - ((gfx_fancy_gradient * fsub) << 16)) < (gfxmode_colors[fg] & 0xFF0000)) tmpcolor += (gfxmode_colors[fg] & 0xFF0000) - ((gfx_fancy_gradient * fsub) << 16);
+                        gfxmode_ptr[base] = tmpcolor;
+                    } else {
+                        gfxmode_ptr[base] = 0;
+                    }
                 } else {
-                    gfxmode_ptr[base] = 0;
-                }
-                base++;
-            } else {
-                if (gfxmode_colors[bg]) {
-                    uint32_t tmpcolor = 0;
-                    if (((gfxmode_colors[bg] & 0x0000FF) - (GRADIENT * bsub)) < (gfxmode_colors[bg] & 0x0000FF)) tmpcolor += (gfxmode_colors[bg] & 0x0000FF) - (GRADIENT * bsub);
-                    if (((gfxmode_colors[bg] & 0x00FF00) - ((GRADIENT * bsub) << 8)) < (gfxmode_colors[bg] & 0x00FF00)) tmpcolor += (gfxmode_colors[bg] & 0x00FF00) - ((GRADIENT * bsub) << 8);
-                    if (((gfxmode_colors[bg] & 0xFF0000) - ((GRADIENT * bsub) << 16)) < (gfxmode_colors[bg] & 0xFF0000)) tmpcolor += (gfxmode_colors[bg] & 0xFF0000) - ((GRADIENT * bsub) << 16);
-                    gfxmode_ptr[base] = tmpcolor;
-                } else {
-                    gfxmode_ptr[base] = 0;
+                    gfxmode_ptr[base] = gfxmode_colors[bg];
                 }
                 base++;
             }
+            fsub += 1;
+            bsub -= 1;
+            base += (gfx_pitch / 4) - charw;
         }
-        fsub += 1;
-        bsub -= 1;
-        base += (gfx_pitch / 4) - charw;
-    }
-    div = charh / 2;
-    for (int y = div; y < charh; y++) {
-        for (int x = 0; x < charw; x++) {
-            if ((font[c][y] & (1 << x))) {
-                if (gfxmode_colors[fg]) {
-                    uint32_t tmpcolor = 0;
-                    if (((gfxmode_colors[fg] & 0x0000FF) - (GRADIENT * fsub)) < (gfxmode_colors[fg] & 0x0000FF)) tmpcolor += (gfxmode_colors[fg] & 0x0000FF) - (GRADIENT * fsub);
-                    if (((gfxmode_colors[fg] & 0x00FF00) - ((GRADIENT * fsub) << 8)) < (gfxmode_colors[fg] & 0x00FF00)) tmpcolor += (gfxmode_colors[fg] & 0x00FF00) - ((GRADIENT * fsub) << 8);
-                    if (((gfxmode_colors[fg] & 0xFF0000) - ((GRADIENT * fsub) << 16)) < (gfxmode_colors[fg] & 0xFF0000)) tmpcolor += (gfxmode_colors[fg] & 0xFF0000) - ((GRADIENT * fsub) << 16);
-                    gfxmode_ptr[base] = tmpcolor;
+        div = charh / 2;
+        for (int y = div; y < charh; y++) {
+            for (int x = 0; x < charw; x++) {
+                if ((font[c][y] & (1 << x))) {
+                    if (gfxmode_colors[fg]) {
+                        tmpcolor = 0;
+                        if (((gfxmode_colors[fg] & 0x0000FF) - (gfx_fancy_gradient * fsub)) < (gfxmode_colors[fg] & 0x0000FF)) tmpcolor += (gfxmode_colors[fg] & 0x0000FF) - (gfx_fancy_gradient * fsub);
+                        if (((gfxmode_colors[fg] & 0x00FF00) - ((gfx_fancy_gradient * fsub) << 8)) < (gfxmode_colors[fg] & 0x00FF00)) tmpcolor += (gfxmode_colors[fg] & 0x00FF00) - ((gfx_fancy_gradient * fsub) << 8);
+                        if (((gfxmode_colors[fg] & 0xFF0000) - ((gfx_fancy_gradient * fsub) << 16)) < (gfxmode_colors[fg] & 0xFF0000)) tmpcolor += (gfxmode_colors[fg] & 0xFF0000) - ((gfx_fancy_gradient * fsub) << 16);
+                        gfxmode_ptr[base] = tmpcolor;
+                    } else {
+                        gfxmode_ptr[base] = 0;
+                    }
                 } else {
-                    gfxmode_ptr[base] = 0;
-                }
-                base++;
-            } else {
-                if (gfxmode_colors[bg]) {
-                    uint32_t tmpcolor = 0;
-                    if (((gfxmode_colors[bg] & 0x0000FF) - (GRADIENT * bsub)) < (gfxmode_colors[bg] & 0x0000FF)) tmpcolor += (gfxmode_colors[bg] & 0x0000FF) - (GRADIENT * bsub);
-                    if (((gfxmode_colors[bg] & 0x00FF00) - ((GRADIENT * bsub) << 8)) < (gfxmode_colors[bg] & 0x00FF00)) tmpcolor += (gfxmode_colors[bg] & 0x00FF00) - ((GRADIENT * bsub) << 8);
-                    if (((gfxmode_colors[bg] & 0xFF0000) - ((GRADIENT * bsub) << 16)) < (gfxmode_colors[bg] & 0xFF0000)) tmpcolor += (gfxmode_colors[bg] & 0xFF0000) - ((GRADIENT * bsub) << 16);
-                    gfxmode_ptr[base] = tmpcolor;
-                } else {
-                    gfxmode_ptr[base] = 0;
+                    gfxmode_ptr[base] = gfxmode_colors[bg];
                 }
                 base++;
             }
+            fsub -= 1;
+            bsub += 1;
+            base += (gfx_pitch / 4) - charw;
         }
-        fsub -= 1;
-        bsub += 1;
-        base += (gfx_pitch / 4) - charw;
-    }
-    #else
-    for (int y = 0; y < charh; y++) {
-        for (int x = 0; x < charw; x++) {
-            if ((font[c][y] & (1 << x))) {
-                gfxmode_ptr[base] = gfxmode_colors[fg];
-            } else {
-                gfxmode_ptr[base] = gfxmode_colors[bg];
+    } else {
+        for (int y = 0; y < charh; y++) {
+            for (int x = 0; x < charw; x++) {
+                if ((font[c][y] & (1 << x))) {
+                    gfxmode_ptr[base] = gfxmode_colors[fg];
+                } else {
+                    gfxmode_ptr[base] = gfxmode_colors[bg];
+                }
+                base++;
             }
-            base++;
+            base += (gfx_pitch / 4) - charw;
         }
-        base += (gfx_pitch / 4) - charw;
     }
-    #endif
 }
 
 static inline void gfxmode_drawchar(int x, int y, char c, uint8_t fg, uint8_t bg) {
