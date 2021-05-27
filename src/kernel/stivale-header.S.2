@@ -1,0 +1,11 @@
+.section .stivalehdr, "aw", @progbits
+.align 8
+header_start:
+    .long stack_top
+    .long 0
+    .hword 0b0000000000000001
+    .hword 640
+    .hword 480
+    .hword 32
+    .long main
+    .long 0
