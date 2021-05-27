@@ -1,8 +1,6 @@
-*.c     text linguist-language=C
-*.h     text linguist-language=C 
-*.1     text linguist-language=Assembly
-*.2     text linguist-language=Assembly
-*.3     text linguist-language=Assembly
-*.bin   binary 
-*.sys   binary 
-*.md    text linguist-language=Markdown
+*.c     linguist-language=C
+*.h     linguist-language=C 
+*.1     linguist-language=Assembly
+*.2     linguist-language=Assembly
+*.3     linguist-language=Assembly
+*.md    linguist-language=Markdown
