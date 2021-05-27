@@ -1,0 +1,8 @@
+*.c     text diff=c
+*.h     text diff=c
+*.1     text diff=asm
+*.2     text diff=asm
+*.3     text diff=asm
+*.bin   binary
+*.sys   binary
+*.md    text diff=markdown
