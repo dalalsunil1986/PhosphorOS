@@ -1,0 +1,16 @@
+.section .stivalehdr, "aw", @progbits
+.align 8
+header_start:
+    .long stack_top
+    .long 0
+    .hword 0b0000000000000000
+    .hword 0
+    .hword 0
+    .hword 0
+    .long _start
+    .long 0
+
+.global gfxtextbuf_begin
+.section .gfxtextbuf, "aw", @nobits
+gfxtextbuf_begin:
+gfxtextbuf_end:
