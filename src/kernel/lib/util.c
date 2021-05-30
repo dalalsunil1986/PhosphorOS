@@ -135,6 +135,9 @@ void idleKeyboard() {
                 } while (curx && !vgetchar(curx - 1, cury));
                 updatecursor();
                 break;
+            case '\e':
+                if (lctl_d || rctl_d) asm("int $1");
+                break;
             case 12:
                 do {
                     tmp = (((uint8_t)(rand())) % 4) + 1;
@@ -188,7 +191,6 @@ void idleKeyboard() {
             case 0x8B:
                 break;
             case 0x8C:
-                if (lctl_d || rctl_d) asm("int $1");
                 break;
             default:
                 kputchar(ch);
@@ -282,4 +284,10 @@ void vga_noblink() {
     asm("andb $0xF7, %al");
     asm("decb %dl");
     asm("outb %al, %dx");
+}
+
+inline void txtdiv() {
+    for (int i = 0; i < textw; i++) {
+        kputchar(196);
+    }
 }

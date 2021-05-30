@@ -1,8 +1,30 @@
 #include <io/ports/ports.h>
 #include <common.h>
 
+bool rtc_ticks_sync = true;
+
+uint64_t rtc_sync_val = 0;
+int rtc_sync_sec = 0;
+bool rtc_sync_setup = false;
+
 void timer_inc() {
     ticks++;
+    if (rtc_ticks_sync) {
+        if (!rtc_sync_setup) {
+            rtc_sync_val = ticks;
+            rtc_sync_setup = true;
+        }
+        outb(0x70, 0x0A);
+        if (!(inb(0x71) & 0x80)) {
+            outb(0x70, 0x00);
+            int new_rtc_sync_sec = inb(0x71);
+            if (new_rtc_sync_sec != rtc_sync_sec) {
+                rtc_sync_sec = new_rtc_sync_sec;
+                rtc_sync_val += 1000;
+                if (ticks < rtc_sync_val) ticks = rtc_sync_val;
+            }
+        }
+    }
     outb(0x20, 0x20);
 }
 
@@ -10,7 +32,7 @@ void gfxmode_int();
 
 void init_pit(uint32_t freq) {
     ticks = 0;
-    if (vmode) {
+    if (vmode == 1) {
         register_interrupt_handler(IRQ0, gfxmode_int);
     } else {
         register_interrupt_handler(IRQ0, timer_inc);

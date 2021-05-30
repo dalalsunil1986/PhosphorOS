@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <io/ports/ports.h>
 
+extern uint16_t* gfxbaktextbuf_begin;
+
 uint16_t* textmode_vbuf = (uint16_t *)0x000B8000;
 
 static inline void textmode_setchar(int x, int y, char c) {
@@ -129,6 +131,27 @@ static inline void textmode_setbgc(int x, int y, uint8_t c) {
     textmode_vbuf[x + y * TMW] = textmode_getchar(x, y) + TMC(textmode_getfgc(x, y), c);
 }
 
+int tcurx, tcury;
+
+void textmode_savebuf() {
+    int max = TMW * TMH;
+    for (int i = 0; i < max; i++) {
+        gfxbaktextbuf_begin[i] = textmode_vbuf[i];
+    }
+    tcurx = curx;
+    tcury = cury;
+}
+
+void textmode_restorebuf() {
+    int max = TMW * TMH;
+    for (int i = 0; i < max; i++) {
+        textmode_vbuf[i] = gfxbaktextbuf_begin[i];
+    }
+    curx = tcurx;
+    cury = tcury;
+    updatecursor();
+}
+
 void initTextMode() {
     curx = 0;
     cury = 0;
@@ -157,4 +180,6 @@ void initTextMode() {
     vgetbgc = textmode_getbgc;
     vcursorstyle = textmode_cursorstyle;
     vhidecursor = textmode_hidecursor;
+    vsavebuf = textmode_savebuf;
+    vrestorebuf = textmode_restorebuf;
 }

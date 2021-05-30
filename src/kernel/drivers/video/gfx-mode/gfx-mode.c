@@ -4,7 +4,10 @@
 #define GMC(f, b) ((((uint8_t)(f) & 0x0F) << 8) + (((uint8_t)(b) & 0x0F) << 12))
 
 extern uint16_t* gfxtextbuf_begin;
+extern uint16_t* gfxbaktextbuf_begin;
+
 uint16_t* gfxmode_vbuf;
+uint16_t* gfxmode_bakbuf;
 
 uint32_t* gfxmode_ptr;
 
@@ -131,14 +134,9 @@ static inline char gfxmode_getchar(int x, int y) {
 
 int ccurx = 0, ccury = 0;
 bool gfx_cursor_old;
-
 bool gfx_cursor = true;
 
 void gfxmode_updatecursor() {}
-
-void gfxmode_hidecursor() {
-    gfx_cursor = false;
-}
 
 static inline void gfxmode_cursorstyle(uint8_t top, uint64_t bottom) {
     curtop = top;
@@ -239,6 +237,11 @@ static inline uint8_t gfxmode_getbgc(int x, int y) {
     return (uint8_t)((gfxmode_vbuf[x + y * textw] >> 12) & 0x0F);
 }
 
+void gfxmode_hidecursor() {
+    gfx_cursor = false;
+    gfxmode_writechar(ccurx, ccury, gfxmode_vbuf[ccurx + ccury * textw], gfxmode_getfgc(ccurx, ccury), gfxmode_getbgc(ccurx, ccury));
+}
+
 void timer_inc();
 int rand();
 uint64_t ticks;
@@ -266,9 +269,34 @@ void gfxmode_int() {
     }
 }
 
+int gtcurx, gtcury;
+
+void gfxmode_savebuf() {
+    gfxmode_writechar(ccurx, ccury, gfxmode_vbuf[ccurx + ccury * textw], gfxmode_getfgc(ccurx, ccury), gfxmode_getbgc(ccurx, ccury));
+    int max = textw * texth;
+    for (int i = 0; i < max; i++) {
+        gfxmode_bakbuf[i] = gfxmode_vbuf[i];
+    }
+    gtcurx = curx;
+    gtcury = cury;
+}
+
+void gfxmode_restorebuf() {
+    gfxmode_writechar(ccurx, ccury, gfxmode_vbuf[ccurx + ccury * textw], gfxmode_getfgc(ccurx, ccury), gfxmode_getbgc(ccurx, ccury));
+    for (int y = 0; y < texth; y++) {
+        for (int x = 0; x < textw; x++) {
+            gfxmode_drawchar(x, y, gfxmode_bakbuf[x + y * textw], (uint8_t)((gfxmode_bakbuf[x + y * textw] >> 8) & 0x0F), (uint8_t)((gfxmode_bakbuf[x + y * textw] >> 12) & 0x0F));
+        }
+    }
+    curx = gtcurx;
+    cury = gtcury;
+    updatecursor();
+}
+
 void initGfxMode() {
     gfxmode_ptr = (uint32_t*)(uint32_t)(stivale_info->framebuffer_addr);
-    gfxmode_vbuf = (uint16_t *)gfxtextbuf_begin;
+    gfxmode_vbuf = (uint16_t *)&gfxtextbuf_begin;
+    gfxmode_bakbuf = (uint16_t *)&gfxbaktextbuf_begin;
     curx = 0;
     cury = 0;
     charw = 8;
@@ -298,4 +326,6 @@ void initGfxMode() {
     vgetbgc = gfxmode_getbgc;
     vcursorstyle = gfxmode_cursorstyle;
     vhidecursor = gfxmode_hidecursor;
+    vsavebuf = gfxmode_savebuf;
+    vrestorebuf = gfxmode_restorebuf;
 }

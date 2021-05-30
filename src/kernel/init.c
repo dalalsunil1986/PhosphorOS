@@ -92,6 +92,6 @@ void init() {
     printfb();
     if (!fpupresent) _kputs("No ");
     kputs("FPU found");
-    anykey(true, false, NULL);
+    anykey(true, true, NULL);
     _kputchar = _std_kputchar;
 }

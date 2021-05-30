@@ -20,7 +20,7 @@ static inline void _std_kputchar(char c) {
             curx = 0;
             break;
         case '\f':
-            for (int i = 0; i < 80; i++) {
+            for (int i = 0; i < texth; i++) {
                 _kputchar('\n');
             }
             curx = cury = 0;

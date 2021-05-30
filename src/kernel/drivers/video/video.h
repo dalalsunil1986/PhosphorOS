@@ -35,6 +35,8 @@ void (* vhidecursor)(void);
 void (* vcursorstyle)(uint8_t top, uint64_t bottom);
 void (* vsetfgc)(int x, int y, uint8_t c);
 void (* vsetbgc)(int x, int y, uint8_t c);
+void (* vsavebuf)(void);
+void (* vrestorebuf)(void);
 
 #include "text-mode/text-mode.h"
 #include "gfx-mode/gfx-mode.h"
