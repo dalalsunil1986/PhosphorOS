@@ -79,7 +79,7 @@ void init_mem() {
     struct stivale_mmap_entry* memmap = (struct stivale_mmap_entry*)(uintptr_t)(stivale_info->memory_map_addr);
     for (size_t i = 0; i < stivale_info->memory_map_entries; i++) {
         struct stivale_mmap_entry e = memmap[i];
-        for (uint32_t len = 0; len < e.length; len += 4096) {
+        for (uint32_t len = 0; len + 4096 <= e.length; len += 4096) {
             if (e.type == STIVALE_MMAP_USABLE)
             set_page_use(((unsigned int)(e.base + len) / 4096), 0);
         }

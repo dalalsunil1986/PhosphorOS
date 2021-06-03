@@ -109,11 +109,46 @@ void fancyClear(int n) {
     vshowcursor();
     gfx_fancy_text = tmp_gfx_fancy_text;
 }
+/*
+int cur_x_old = 0;
+int cur_y_old = 0;
+int tmp_mouse_x = 0;
+int tmp_mouse_y = 0;
 
+void mouse_handler();
+*/
 void idleKeyboard() {
+    //init_mouse();
     int tmp = 0;
     static int lastfc = 0;
+    //mouse_handler();
+    /*
+    uint8_t tmpfgc = fgc;
+    uint8_t tmpbgc = bgc;
+    tmp_mouse_x = mouse_x;
+    tmp_mouse_y = mouse_y;
+    fgc = 15 - vgetfgc(tmp_mouse_x, tmp_mouse_y);
+    bgc = 15 - vgetbgc(tmp_mouse_x, tmp_mouse_y);
+    vsetchar(tmp_mouse_x, tmp_mouse_y, vgetchar(tmp_mouse_x, tmp_mouse_y));
+    fgc = tmpfgc;
+    bgc = tmpbgc;
+    cur_x_old = tmp_mouse_x;
+    cur_y_old = tmp_mouse_y;
+    */
     while (1) {
+        /*
+        tmp_mouse_x = mouse_x;
+        tmp_mouse_y = mouse_y;
+        tmpfgc = fgc;
+        tmpbgc = bgc;
+        fgc = 15 - vgetfgc(cur_x_old, cur_y_old);
+        bgc = 15 - vgetbgc(cur_x_old, cur_y_old);
+        vsetchar(cur_x_old, cur_y_old, vgetchar(cur_x_old, cur_y_old));
+        fgc = tmpfgc;
+        bgc = tmpbgc;
+        cur_x_old = tmp_mouse_x;
+        cur_y_old = tmp_mouse_y;
+        */
         char ch = kbgetchar();
         if (kb_alt_char) {
             kputchar(ch);
@@ -240,6 +275,19 @@ void idleKeyboard() {
                     break;
             }
         }
+        //if (cur_x_old != mouse_x || cur_y_old != mouse_y) {
+        //mouse_handler();
+        /*
+        tmpfgc = fgc;
+        tmpbgc = bgc;
+        fgc = 15 - vgetfgc(cur_x_old, cur_y_old);
+        bgc = 15 - vgetbgc(cur_x_old, cur_y_old);
+        vsetchar(cur_x_old, cur_y_old, vgetchar(cur_x_old, cur_y_old));
+        fgc = tmpfgc;
+        bgc = tmpbgc;
+        cur_x_old = tmp_mouse_x;
+        cur_y_old = tmp_mouse_y;
+        */
         asm("hlt");
     }
 }
@@ -333,4 +381,10 @@ void txtdiv() {
     for (int i = 0; i < textw; i++) {
         kputchar(196);
     }
+}
+
+static inline uint64_t rdtsc() {
+    uint64_t ret;
+    asm("rdtsc": "=A"(ret));
+    return ret;
 }

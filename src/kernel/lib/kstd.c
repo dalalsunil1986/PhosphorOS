@@ -147,6 +147,7 @@ void kprintf(char* s, ...) {
     va_list arg;
     va_start(arg, s);
     int d;
+    int64_t l;
     char* str;
     int tfgc = fgc, tbgc = bgc;
     for (tmp = s; *tmp; tmp++) {
@@ -166,6 +167,29 @@ void kprintf(char* s, ...) {
                     break;
                 case 'u':
                     __kputs(convert(va_arg(arg, unsigned int), 10));
+                    break;
+                case 'l':
+                    tmp++;
+                    switch (*tmp) {
+                        case 'd':
+                            l = va_arg(arg, int64_t);
+                            if (l < 0) {l = -l; _kputchar('-');}
+                            __kputs(convert(l, 10));
+                            break;
+                        case 'u':
+                            __kputs(convert(va_arg(arg, uint64_t), 10));
+                            break;
+                        case 'x':
+                            __kputs(convert(va_arg(arg, uint64_t), 16));
+                            break;
+                        case 'o':
+                            __kputs(convert(va_arg(arg, uint64_t), 8));
+                            break;
+                    break;
+                        default:
+                            __kputs("%l");
+                            _kputchar(*tmp);
+                    }
                     break;
                 case 'x':
                     __kputs(convert(va_arg(arg, unsigned int), 16));
@@ -198,7 +222,7 @@ void kprintf(char* s, ...) {
                             }
                             break;
                         case 'x':
-                            str = convert(va_arg(arg, unsigned int), 16);
+                            str = convert(va_arg(arg, uint32_t), 16);
                             d = va_arg(arg, unsigned int) - kstrlen(str);
                             while (d > 0) {_kputchar('0'); d--;}
                             __kputs(str);

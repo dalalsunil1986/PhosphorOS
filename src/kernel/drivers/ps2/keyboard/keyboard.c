@@ -46,6 +46,24 @@ char kbgetchar() {
 
 #include <util.c>
 
+void kboutb(uint8_t byte) {
+    uint8_t tmp;
+    int tries = 0;
+    do {
+        outb(0x60, byte);
+        do {
+            tmp = inb(0x60);
+            //kprintf("0x%_x (0x%_x): 0x%_x\n", port, 4, byte, 2, tmp, 2);
+        } while (tmp == 0);
+        tries++;
+    } while (tmp == 0xFE && tries < 3);
+}    
+
+void kbupdateleds() {
+    kboutb(0xED);
+    kboutb((s_lock & 1) + ((n_lock & 1) << 1) + ((c_lock & 1) << 2));
+}
+
 void kph() {
     kbin = inb(0x60);
     //kprintf("Keyboard: 0x%_x [%d][%d|%d|%d][%d|%d|%d][%d|%d|%d] ", kbin, 2, xE0, c_lock, n_lock, s_lock, lsft_d, lctl_d, lalt_d, rsft_d, rctl_d, ralt_d);
@@ -87,12 +105,15 @@ void kph() {
                     break;
                 case 0x3A:
                     c_lock = !c_lock;
+                    kbupdateleds();
                     break;
                 case 0x45:
                     n_lock = !n_lock;
+                    kbupdateleds();
                     break;
                 case 0x46:
                     s_lock = !s_lock;
+                    kbupdateleds();
                     break;
                 default:
                     if (lalt_d || ralt_d) {
@@ -182,18 +203,6 @@ void kph() {
     if (xE0 && kbin == 0x5E) reboot();
     key = true;
 }
-
-void kboutb(uint16_t port, uint8_t byte) {
-    //while (!(inb(0x64) & 2)) {}
-    uint8_t tmp;
-    do {
-        outb(port, byte);
-        do {
-            tmp = inb(0x60);
-            kprintf("0x%_x (0x%_x): 0x%_x\n", port, 4, byte, 2, tmp, 2);
-        } while (tmp == 0);
-    } while (tmp == 0xFE);
-}    
 
 void init_keyboard() {
     key = false;

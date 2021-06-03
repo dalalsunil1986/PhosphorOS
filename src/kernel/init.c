@@ -93,7 +93,8 @@ void init() {
     isr_install();
     irq_install();
     init_pit(1000);
-    init_ps2();
+    //init_ps2();
+    init_keyboard();
     init_serial(COM1);
     serial_puts(COM1, "Opened COM1\n");
     printmm();

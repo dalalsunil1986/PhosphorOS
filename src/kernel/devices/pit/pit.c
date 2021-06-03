@@ -6,6 +6,7 @@ bool rtc_ticks_sync = true;
 uint64_t rtc_sync_val = 0;
 int rtc_sync_sec = 0;
 bool rtc_sync_setup = false;
+bool rtc_sync_first = true;
 
 void timer_inc() {
     ticks++;
@@ -20,7 +21,8 @@ void timer_inc() {
             int new_rtc_sync_sec = inb(0x71);
             if (new_rtc_sync_sec != rtc_sync_sec) {
                 rtc_sync_sec = new_rtc_sync_sec;
-                rtc_sync_val += 1000;
+                if (!rtc_sync_first) rtc_sync_val += 1000;
+                if (rtc_sync_first) rtc_sync_first = false;
                 if (ticks < rtc_sync_val) ticks = rtc_sync_val;
             }
         }

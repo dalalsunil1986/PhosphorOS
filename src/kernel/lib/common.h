@@ -56,5 +56,11 @@ static uint32_t alloc_mem;
 uint64_t ticks;
 
 uint64_t boot_ticks;
+uint64_t boot_cycles;
+
+int mouse_x = 0;
+int mouse_y = 0;
+
+int mouse_ping = 3;
 
 #endif
