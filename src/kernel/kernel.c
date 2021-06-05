@@ -22,7 +22,7 @@ void free(void*);
 #include <font.h>
 
 char phkver[] = "0.9";
-char phkrev[] = "B";
+char phkrev[] = "C";
 
 void main(struct stivale_struct* boot_info, int hasfpu) {
     boot_cycles = rdtsc();
@@ -42,11 +42,11 @@ void main(struct stivale_struct* boot_info, int hasfpu) {
     anykey(true, true, NULL);
     txtdiv();
     outb(0x70, 0x00);
-    seed = (uint64_t)((ticks + 1) * rdtsc() - 4294967296 * inb(0x71) * (ticks + 1) * (boot_ticks + 1) * rdtsc());
+    seed = (unsigned int)((ticks + 1) * rdtsc() * inb(0x71) * (ticks + 1) * (boot_ticks + 1) - rdtsc());
     outb(0x70, 0x02);
-    seed = rdtsc() * seed / ((inb(0x71) + (ticks + 1) * (boot_ticks + 1) - (ticks + 1) * (boot_ticks + 1)) + 5);
+    seed -= rdtsc() * (inb(0x71) + 1) * (ticks + 1);
     kprintf("Booted in %u milliseconds, %lu cycles.\n", (uint32_t)boot_ticks, (uint64_t)boot_cycles);
-    kprintf("Random number generator seeded with %u\n", seed);
+    kprintf("Random number generator seeded with %u.\n", (unsigned int)seed);
     txtdiv();
     kprintf("%_fWelcome %_fto %_fPhosphorOS %_fversion %_f%s %_frevision %_f%s%_f!\n", 15, 1, 9, 2, 10, phkver, 4, 12, phkrev, 15);
     beep(900, 150);

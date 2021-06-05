@@ -235,7 +235,6 @@ void gfxmode_hidecursor() {
 }
 
 void timer_inc();
-int rand();
 uint64_t ticks;
 
 bool dcur = false;

@@ -9,7 +9,7 @@ static char keymap_lower[128] =
 "\e1234567890-=\b\tqwertyuiop[]\n\0asdfghjkl;'`\0\\zxcvbnm,./\0*\0 \0\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\0\0""789-456+1230.\0\0\0\x8A\x8B";
 
 static char keymap_upper[128] =
-"\e!@#$%^&*()_+\b\tQWERTYUIOP{}\r\0ASDFGHJKL:\"~\0|ZXCVBNM<>?\0*\0 \0\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\0\0""789-456+1230.\0\0\0\x8A\x8B";
+"\e!@#$%^&*()_+\b\tQWERTYUIOP{}\n\0ASDFGHJKL:\"~\0|ZXCVBNM<>?\0*\0 \0\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\0\0""789-456+1230.\0\0\0\x8A\x8B";
 
 static char keymap_special[128] =
 "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\n\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0/\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x90\x8C\x92\0\x8D\0\x8E\0\x91\x8F\x93\x94\x7F\0\0\0\0\0\0\0\x95\x96";
@@ -207,5 +207,6 @@ void kph() {
 void init_keyboard() {
     key = false;
     for (int i = 0; i < 384; i++) {keydown[i] = false;}
+    kbupdateleds();
     register_interrupt_handler(IRQ1, kph);
 }

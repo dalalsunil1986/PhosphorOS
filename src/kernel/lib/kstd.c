@@ -249,9 +249,9 @@ unsigned int seed;
 
 #define srand(n) seed = (unsigned int)n
 
-int rand() {
+unsigned int rand() {
     unsigned int next = seed;
-    int result;
+    unsigned int result;
     next *= 1103515245;
     next += 12345;
     result = (unsigned int) (next / 65536) % 2048;

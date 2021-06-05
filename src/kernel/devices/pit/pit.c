@@ -27,6 +27,7 @@ void timer_inc() {
             }
         }
     }
+    outb(0x20, 0x20);
 }
 
 void gfxmode_int();

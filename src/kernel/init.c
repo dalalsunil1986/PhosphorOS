@@ -74,19 +74,20 @@ int _init_kpc_l = 0;
 void _init_kputchar(char c) {
     outb(COM1, c);
     _std_kputchar(c);
-    if (!curx) _init_kpc_l++;
+    if (!curx && c != '\r') _init_kpc_l++;
     if (_init_kpc_l >= texth - 1) {
         _init_kpc_l = 0;
         uint64_t tmpticks = ticks;
         uint64_t tmpsyncticks = rtc_sync_val;
-        anykey(true, true, NULL);
+        anykey(false, true, NULL);
         rtc_sync_val = tmpsyncticks;
         ticks = tmpticks;
     }
 }
 
 void init() {
-    _kputchar = _std_kputchar;
+    _kputchar = _init_kputchar;
+    kputs(logo);
     //_kputchar = _init_kputchar;
     vcursorstyle(14, 15);
     init_gdt();
@@ -106,5 +107,6 @@ void init() {
     kprintf("GFXTXT: 0x%_x\n", (unsigned int)gfxmode_vbuf, 8);
     kprintf("GFXBAK: 0x%_x\n", (unsigned int)gfxmode_bakbuf, 8);
     */
+    _kputchar = _std_kputchar;
     boot_ticks = ticks;
 }

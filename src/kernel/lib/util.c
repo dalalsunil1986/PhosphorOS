@@ -177,7 +177,8 @@ void idleKeyboard() {
                     do {
                         tmp = (((uint8_t)(rand())) % 4) + 1;
                     } while (tmp == lastfc);
-                    fancyClear(tmp);
+                    //fancyClear(tmp);
+                    fancyClear(1);
                     lastfc = tmp;
                     break;
                 default:

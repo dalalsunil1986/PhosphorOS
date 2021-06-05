@@ -48,6 +48,7 @@ bool fpupresent = false;
 //#include <util.h>
 //#include <panic.h>
 //#include <stivale.h>
+#include <ascii.h>
 
 static uint32_t free_mem;
 static uint32_t usable_mem;
